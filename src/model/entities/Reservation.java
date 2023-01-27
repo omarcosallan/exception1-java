@@ -7,29 +7,37 @@ import java.time.format.DateTimeFormatter;
 public class Reservation {
 
 	private Integer roomNumber;
-	private LocalDate checkin;
-	private LocalDate checkout;
+	private LocalDate checkIn;
+	private LocalDate checkOut;
 
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-	public Reservation(Integer roomNumber, LocalDate checkin, LocalDate checkout) {
+	public Reservation(Integer roomNumber, LocalDate checkIn, LocalDate checkOut) {
 		this.roomNumber = roomNumber;
-		this.checkin = checkin;
-		this.checkout = checkout;
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
 	}
 
 	public Long duration() {
-		return Duration.between(checkin.atStartOfDay(), checkout.atStartOfDay()).toDays();
+		return Duration.between(checkIn.atStartOfDay(), checkOut.atStartOfDay()).toDays();
 	}
 
-	public void updateDate(LocalDate checkin, LocalDate checkout) {
-		this.checkin = checkin;
-		this.checkout = checkout;
+	public String updateDate(LocalDate checkIn, LocalDate checkOut) {
+		LocalDate now = LocalDate.now();
+		if (checkIn.isBefore(now) || checkOut.isBefore(now)) {
+			return "Reservation dates for update must be future dates";
+		}
+		if (!checkOut.isAfter(checkIn)) {
+			return "Check-out date must be after check-in date";
+		}
+		this.checkIn = checkIn;
+		this.checkOut = checkOut;
+		return null;
 	}
 
 	@Override
 	public String toString() {
-		return "Room " + this.roomNumber + ", check-in: " + this.checkin.format(formatter) + ", check-out: "
-				+ this.checkout.format(formatter) + ", " + this.duration() + " nigths";
+		return "Room " + this.roomNumber + ", check-in: " + this.checkIn.format(formatter) + ", check-out: "
+				+ this.checkOut.format(formatter) + ", " + this.duration() + " nigths";
 	}
 }
